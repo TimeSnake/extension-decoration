@@ -29,13 +29,21 @@ import java.util.Map;
 
 public class StandEditor implements Listener, UserInventoryInteractListener, UserInventoryClickListener, InventoryHolder {
 
-    private static final Double LEG_HIGHT = 0.8;
-    private static final Double ARM_HIGHT = 1.4;
+    private static final Double LEG_HEIGHT = 0.8;
+    private static final Double ARM_HEIGHT = 1.4;
 
     private static final double ANGLE = 0.0625 * (2 * Math.PI);
 
-    public enum EditType {
-        VISIBLE, BASE_PLATE, ARMS, SMALL, COPY, PASTE, LOCK, HAND, RESET_ROTATION
+    static {
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(0, Material.FEATHER, "§6Visibility", List.of("§fSet the visibility of an armorstand")), EditType.VISIBLE);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(1, Material.SMOOTH_STONE_SLAB, "§6Base Plate", List.of("§fSet the base plate visibility of an armorstand")), EditType.BASE_PLATE);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(2, Material.STICK, "§6Arms", List.of("§fSet the arm visibility of an armorstand")), EditType.ARMS);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(3, Material.EGG, "§6Small", List.of("§fSet the size of an armorstand")), EditType.SMALL);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(4, Material.LEVER, "§6Lock", List.of("§fLock the the items of an armorstand")), EditType.LOCK);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(5, Material.DEAD_BUSH, "§6Slots", List.of("§fSet the items slots of an armorstand")), EditType.SLOTS);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(6, Material.COMPASS, "§6Reset Rotations", List.of("§fResets the rotations of an armorstand")), EditType.RESET_ROTATION);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(7, Material.ARMOR_STAND, "§6Copy", List.of("§fCopy an existent armorstand")), EditType.COPY);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(8, Material.ARMOR_STAND, "§6Paste", List.of("§fPaste the copied or last edited armorstand on your location")), EditType.PASTE);
     }
 
     public enum BodyPart {
@@ -49,16 +57,41 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
 
     private static final HashMap<ExItemStack, EditType> EDIT_TYPES_BY_ITEM = new HashMap<>();
 
-    static {
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(0, Material.FEATHER, "§6Visibility", List.of("§fSet the visibility of an armorstand")), EditType.VISIBLE);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(1, Material.SMOOTH_STONE_SLAB, "§6Base Plate", List.of("§fSet the base plate visibility of an armorstand")), EditType.BASE_PLATE);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(2, Material.STICK, "§6Arms", List.of("§fSet the arm visibility of an armorstand")), EditType.ARMS);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(3, Material.EGG, "§6Small", List.of("§fSet the size of an armorstand")), EditType.SMALL);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(4, Material.LEVER, "§6Lock", List.of("§fLock the the items of an armorstand")), EditType.LOCK);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(5, Material.DEAD_BUSH, "§6Hands", List.of("§fSet the hand items of an armorstand")), EditType.HAND);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(6, Material.COMPASS, "§6Reset Rotations", List.of("§fResets the rotations of an armorstand")), EditType.RESET_ROTATION);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(7, Material.ARMOR_STAND, "§6Copy", List.of("§fCopy an existent armorstand")), EditType.COPY);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(8, Material.ARMOR_STAND, "§6Paste", List.of("§fPaste the copied or last edited armorstand on your location")), EditType.PASTE);
+    public StandEditor(User user) {
+        this.user = user;
+
+        this.toolInv = Server.createExInventory(9, "Armorstand Tool", this);
+
+        for (ExItemStack item : EDIT_TYPES_BY_ITEM.keySet()) {
+            this.toolInv.setItemStack(item);
+        }
+
+        this.itemInv = Server.createExInventory(18, "Armorstand Items", this);
+        this.itemInv.setItemStack(0, new ExItemStack(Material.STICK, "§6Left Arm"));
+        this.itemInv.setItemStack(1, new ExItemStack(Material.PLAYER_HEAD, "§6Head"));
+        this.itemInv.setItemStack(2, new ExItemStack(Material.STICK, "§6Right Arm"));
+
+        for (int i = 3; i < 18; i++) {
+            this.itemInv.setItemStack(i, PLACE_HOLDER);
+            if (i == 8) {
+                i += 3;
+            }
+        }
+
+        this.bodyPartInv = Server.createExInventory(45, "Armorstand Body Parts", this);
+
+        for (ExItemStack item : BODY_PARTS_BY_ITEM.keySet()) {
+            this.bodyPartInv.setItemStack(item);
+        }
+
+        for (ExItemStack item : AXIS_BY_ITEM.keySet()) {
+            this.bodyPartInv.setItemStack(item);
+        }
+
+        Server.getInventoryEventManager().addInteractListener(this, tool, angleTool);
+        Server.getInventoryEventManager().addClickListener(this, this);
+
+        Server.registerListener(this, ExDecoration.getPlugin());
     }
 
     private static final HashMap<ExItemStack, BodyPart> BODY_PARTS_BY_ITEM = new HashMap<>();
@@ -99,36 +132,6 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
     private BodyPart bodyPart = BodyPart.HEAD;
     private Axis axis = Axis.FRONT;
 
-    public StandEditor(User user) {
-        this.user = user;
-
-        this.toolInv = Server.createExInventory(9, "Armorstand Tool", this);
-
-        for (ExItemStack item : EDIT_TYPES_BY_ITEM.keySet()) {
-            this.toolInv.setItemStack(item);
-        }
-
-        this.itemInv = Server.createExInventory(9, "Armorstand Items", this);
-        for (int i = 2; i < 9; i++) {
-            this.itemInv.setItemStack(i, PLACE_HOLDER);
-        }
-
-        this.bodyPartInv = Server.createExInventory(45, "Armorstand Body Parts", this);
-
-        for (ExItemStack item : BODY_PARTS_BY_ITEM.keySet()) {
-            this.bodyPartInv.setItemStack(item);
-        }
-
-        for (ExItemStack item : AXIS_BY_ITEM.keySet()) {
-            this.bodyPartInv.setItemStack(item);
-        }
-
-        Server.getInventoryEventManager().addInteractListener(this, tool, angleTool);
-        Server.getInventoryEventManager().addClickListener(this, this);
-
-        Server.registerListener(this, ExDecoration.getPlugin());
-    }
-
     private void edit() {
         switch (this.editType) {
             case VISIBLE:
@@ -155,9 +158,10 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
                 }
                 user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Locked: " + ChatColor.VALUE + this.armorStand.isSlotDisabled(EquipmentSlot.FEET));
                 break;
-            case HAND:
-                this.armorStand.setItem(EquipmentSlot.HAND, this.itemInv.getInventory().getItem(0));
-                this.armorStand.setItem(EquipmentSlot.OFF_HAND, this.itemInv.getInventory().getItem(1));
+            case SLOTS:
+                this.armorStand.setItem(EquipmentSlot.HAND, this.itemInv.getInventory().getItem(11));
+                this.armorStand.setItem(EquipmentSlot.OFF_HAND, this.itemInv.getInventory().getItem(9));
+                this.armorStand.setItem(EquipmentSlot.HEAD, this.itemInv.getInventory().getItem(10));
                 break;
             case COPY:
                 user.sendPluginMessage(Plugin.DECO, "Copied");
@@ -176,6 +180,56 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
                 user.sendPluginMessage(Plugin.DECO, "No tool selected");
 
         }
+    }
+
+    @Override
+    public void onUserInventoryClick(UserInventoryClickEvent event) {
+        ExItemStack item = event.getClickedItem();
+
+        if (event.getInventory().equals(this.itemInv.getInventory())) {
+            if (event.getSlot() == 9 || event.getSlot() == 10 || event.getSlot() == 11) {
+                return;
+            }
+
+            event.setCancelled(true);
+            return;
+        }
+
+        event.setCancelled(true);
+
+        if (event.getInventory().equals(this.toolInv.getInventory())) {
+
+            for (Map.Entry<ExItemStack, EditType> entry : EDIT_TYPES_BY_ITEM.entrySet()) {
+                if (item.equals(entry.getKey())) {
+                    this.editType = entry.getValue();
+
+                    user.sendPluginMessage(Plugin.DECO, "Tool: " + ChatColor.VALUE + this.editType.name().toLowerCase());
+
+                    if (this.editType.equals(EditType.SLOTS)) {
+                        this.user.openInventory(this.itemInv);
+                        return;
+                    }
+
+                    break;
+                }
+            }
+        } else if (event.getInventory().equals(this.bodyPartInv.getInventory())) {
+            for (Map.Entry<ExItemStack, BodyPart> entry : BODY_PARTS_BY_ITEM.entrySet()) {
+                if (item.equals(entry.getKey())) {
+                    this.bodyPart = entry.getValue();
+                    break;
+                }
+            }
+
+            for (Map.Entry<ExItemStack, Axis> entry : AXIS_BY_ITEM.entrySet()) {
+                if (item.equals(entry.getKey())) {
+                    this.axis = entry.getValue();
+                }
+            }
+        }
+
+
+        event.getUser().closeInventory();
     }
 
     @Deprecated
@@ -295,45 +349,8 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         event.setCancelled(true);
     }
 
-    @Override
-    public void onUserInventoryClick(UserInventoryClickEvent event) {
-        ExItemStack item = event.getClickedItem();
-
-        event.setCancelled(true);
-
-        if (event.getInventory().equals(this.toolInv.getInventory())) {
-
-            for (Map.Entry<ExItemStack, EditType> entry : EDIT_TYPES_BY_ITEM.entrySet()) {
-                if (item.equals(entry.getKey())) {
-                    this.editType = entry.getValue();
-
-                    user.sendPluginMessage(Plugin.DECO, "Tool: " + ChatColor.VALUE + this.editType.name().toLowerCase());
-
-                    if (this.editType.equals(EditType.HAND)) {
-                        this.user.openInventory(this.itemInv);
-                        return;
-                    }
-
-                    break;
-                }
-            }
-        } else if (event.getInventory().equals(this.bodyPartInv.getInventory())) {
-            for (Map.Entry<ExItemStack, BodyPart> entry : BODY_PARTS_BY_ITEM.entrySet()) {
-                if (item.equals(entry.getKey())) {
-                    this.bodyPart = entry.getValue();
-                    break;
-                }
-            }
-
-            for (Map.Entry<ExItemStack, Axis> entry : AXIS_BY_ITEM.entrySet()) {
-                if (item.equals(entry.getKey())) {
-                    this.axis = entry.getValue();
-                }
-            }
-        }
-
-
-        event.getUser().closeInventory();
+    public enum EditType {
+        VISIBLE, BASE_PLATE, ARMS, SMALL, COPY, PASTE, LOCK, SLOTS, RESET_ROTATION
     }
 
 }
