@@ -34,6 +34,8 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
 
     private static final double ANGLE = 0.0625 * (2 * Math.PI);
 
+    private static final HashMap<ExItemStack, EditType> EDIT_TYPES_BY_ITEM = new HashMap<>();
+
     static {
         EDIT_TYPES_BY_ITEM.put(new ExItemStack(0, Material.FEATHER, "§6Visibility", List.of("§fSet the visibility of an armorstand")), EditType.VISIBLE);
         EDIT_TYPES_BY_ITEM.put(new ExItemStack(1, Material.SMOOTH_STONE_SLAB, "§6Base Plate", List.of("§fSet the base plate visibility of an armorstand")), EditType.BASE_PLATE);
@@ -42,8 +44,9 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         EDIT_TYPES_BY_ITEM.put(new ExItemStack(4, Material.LEVER, "§6Lock", List.of("§fLock the the items of an armorstand")), EditType.LOCK);
         EDIT_TYPES_BY_ITEM.put(new ExItemStack(5, Material.DEAD_BUSH, "§6Slots", List.of("§fSet the items slots of an armorstand")), EditType.SLOTS);
         EDIT_TYPES_BY_ITEM.put(new ExItemStack(6, Material.COMPASS, "§6Reset Rotations", List.of("§fResets the rotations of an armorstand")), EditType.RESET_ROTATION);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(7, Material.ARMOR_STAND, "§6Copy", List.of("§fCopy an existent armorstand")), EditType.COPY);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(8, Material.ARMOR_STAND, "§6Paste", List.of("§fPaste the copied or last edited armorstand on your location")), EditType.PASTE);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(7, Material.BEDROCK, "§6Gravity", List.of("§fToggles the gravity of an armorstand")), EditType.GRAVITY);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(9, Material.ARMOR_STAND, "§6Copy", List.of("§fCopy an existent armorstand")), EditType.COPY);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(10, Material.ARMOR_STAND, "§6Paste", List.of("§fPaste the copied or last edited armorstand on your location")), EditType.PASTE);
     }
 
     public enum BodyPart {
@@ -54,13 +57,10 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         FRONT, SIDE, ROTATION
     }
 
-
-    private static final HashMap<ExItemStack, EditType> EDIT_TYPES_BY_ITEM = new HashMap<>();
-
     public StandEditor(User user) {
         this.user = user;
 
-        this.toolInv = Server.createExInventory(9, "Armorstand Tool", this);
+        this.toolInv = Server.createExInventory(18, "Armorstand Tool", this);
 
         for (ExItemStack item : EDIT_TYPES_BY_ITEM.keySet()) {
             this.toolInv.setItemStack(item);
@@ -175,9 +175,12 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
                 this.armorStand.setBodyPose(new EulerAngle(0, 0, 0));
                 user.sendPluginMessage(Plugin.DECO, "Reset");
                 break;
-
+            case GRAVITY:
+                this.armorStand.setGravity(!this.armorStand.hasGravity());
+                user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Gravity: " + ChatColor.VALUE + this.armorStand.hasGravity());
+                break;
             default:
-                user.sendPluginMessage(Plugin.DECO, "No tool selected");
+                user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "No tool selected");
 
         }
     }
@@ -203,7 +206,7 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
                 if (item.equals(entry.getKey())) {
                     this.editType = entry.getValue();
 
-                    user.sendPluginMessage(Plugin.DECO, "Tool: " + ChatColor.VALUE + this.editType.name().toLowerCase());
+                    user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Tool: " + ChatColor.VALUE + this.editType.name().toLowerCase());
 
                     if (this.editType.equals(EditType.SLOTS)) {
                         this.user.openInventory(this.itemInv);
@@ -350,7 +353,7 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
     }
 
     public enum EditType {
-        VISIBLE, BASE_PLATE, ARMS, SMALL, COPY, PASTE, LOCK, SLOTS, RESET_ROTATION
+        VISIBLE, BASE_PLATE, ARMS, SMALL, COPY, PASTE, LOCK, SLOTS, RESET_ROTATION, GRAVITY
     }
 
 }
