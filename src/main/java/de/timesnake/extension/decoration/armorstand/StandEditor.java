@@ -25,14 +25,13 @@ import org.bukkit.util.EulerAngle;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class StandEditor implements Listener, UserInventoryInteractListener, UserInventoryClickListener, InventoryHolder {
 
     private static final Double LEG_HEIGHT = 0.8;
     private static final Double ARM_HEIGHT = 1.4;
 
-    private static final double ANGLE = 0.0625 * (2 * Math.PI);
+    private static final double ANGLE = 0.0625 / 4 * (2 * Math.PI);
 
     private static final HashMap<ExItemStack, EditType> EDIT_TYPES_BY_ITEM = new HashMap<>();
 
@@ -57,43 +56,6 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         FRONT, SIDE, ROTATION
     }
 
-    public StandEditor(User user) {
-        this.user = user;
-
-        this.toolInv = Server.createExInventory(18, "Armorstand Tool", this);
-
-        for (ExItemStack item : EDIT_TYPES_BY_ITEM.keySet()) {
-            this.toolInv.setItemStack(item);
-        }
-
-        this.itemInv = Server.createExInventory(18, "Armorstand Items", this);
-        this.itemInv.setItemStack(0, new ExItemStack(Material.STICK, "§6Left Arm"));
-        this.itemInv.setItemStack(1, new ExItemStack(Material.PLAYER_HEAD, "§6Head"));
-        this.itemInv.setItemStack(2, new ExItemStack(Material.STICK, "§6Right Arm"));
-
-        for (int i = 3; i < 18; i++) {
-            this.itemInv.setItemStack(i, PLACE_HOLDER);
-            if (i == 8) {
-                i += 3;
-            }
-        }
-
-        this.bodyPartInv = Server.createExInventory(45, "Armorstand Body Parts", this);
-
-        for (ExItemStack item : BODY_PARTS_BY_ITEM.keySet()) {
-            this.bodyPartInv.setItemStack(item);
-        }
-
-        for (ExItemStack item : AXIS_BY_ITEM.keySet()) {
-            this.bodyPartInv.setItemStack(item);
-        }
-
-        Server.getInventoryEventManager().addInteractListener(this, tool, angleTool);
-        Server.getInventoryEventManager().addClickListener(this, this);
-
-        Server.registerListener(this, ExDecoration.getPlugin());
-    }
-
     private static final HashMap<ExItemStack, BodyPart> BODY_PARTS_BY_ITEM = new HashMap<>();
 
     static {
@@ -106,6 +68,8 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
     }
 
     private static final HashMap<ExItemStack, Axis> AXIS_BY_ITEM = new HashMap<>();
+
+    private static final ExItemStack ANGLE_MULTIPLIER_ITEM = new ExItemStack(51, Material.CLOCK, "§6Angle Multiplier");
 
     static {
         AXIS_BY_ITEM.put(new ExItemStack(15, Material.PLAYER_HEAD, "§6Front"), Axis.FRONT);
@@ -131,16 +95,58 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
     private EditType editType = EditType.ARMS;
     private BodyPart bodyPart = BodyPart.HEAD;
     private Axis axis = Axis.FRONT;
+    private int angleMultiplier = 4;
+
+    public StandEditor(User user) {
+        this.user = user;
+
+        this.toolInv = Server.createExInventory(18, "Armorstand Tool", this);
+
+        for (ExItemStack item : EDIT_TYPES_BY_ITEM.keySet()) {
+            this.toolInv.setItemStack(item);
+        }
+
+        this.itemInv = Server.createExInventory(18, "Armorstand Items", this);
+        this.itemInv.setItemStack(0, new ExItemStack(Material.STICK, "§6Left Arm"));
+        this.itemInv.setItemStack(1, new ExItemStack(Material.PLAYER_HEAD, "§6Head"));
+        this.itemInv.setItemStack(2, new ExItemStack(Material.STICK, "§6Right Arm"));
+
+        for (int i = 3; i < 18; i++) {
+            this.itemInv.setItemStack(i, PLACE_HOLDER);
+            if (i == 8) {
+                i += 3;
+            }
+        }
+
+        this.bodyPartInv = Server.createExInventory(54, "Armorstand Body Parts", this);
+
+        for (ExItemStack item : BODY_PARTS_BY_ITEM.keySet()) {
+            this.bodyPartInv.setItemStack(item);
+        }
+
+        for (ExItemStack item : AXIS_BY_ITEM.keySet()) {
+            this.bodyPartInv.setItemStack(item);
+        }
+
+        this.bodyPartInv.setItemStack(ANGLE_MULTIPLIER_ITEM.cloneWithId().asQuantity(this.angleMultiplier));
+
+        Server.getInventoryEventManager().addInteractListener(this, tool, angleTool);
+        Server.getInventoryEventManager().addClickListener(this, this);
+
+        Server.registerListener(this, ExDecoration.getPlugin());
+    }
 
     private void edit() {
         switch (this.editType) {
             case VISIBLE:
                 this.armorStand.setVisible(!this.armorStand.isVisible());
-                user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Visible: " + ChatColor.VALUE + this.armorStand.isVisible());
+                user.sendPluginMessage(Plugin.DECO,
+                        ChatColor.PERSONAL + "Visible: " + ChatColor.VALUE + this.armorStand.isVisible());
                 break;
             case BASE_PLATE:
                 this.armorStand.setBasePlate(!this.armorStand.hasBasePlate());
-                user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Base Plate: " + ChatColor.VALUE + this.armorStand.hasBasePlate());
+                user.sendPluginMessage(Plugin.DECO,
+                        ChatColor.PERSONAL + "Base Plate: " + ChatColor.VALUE + this.armorStand.hasBasePlate());
                 break;
             case ARMS:
                 this.armorStand.setArms(!this.armorStand.hasArms());
@@ -202,32 +208,40 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
 
         if (event.getInventory().equals(this.toolInv.getInventory())) {
 
-            for (Map.Entry<ExItemStack, EditType> entry : EDIT_TYPES_BY_ITEM.entrySet()) {
-                if (item.equals(entry.getKey())) {
-                    this.editType = entry.getValue();
+            EditType editType = EDIT_TYPES_BY_ITEM.get(item);
 
-                    user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Tool: " + ChatColor.VALUE + this.editType.name().toLowerCase());
+            if (editType != null) {
+                this.editType = editType;
 
-                    if (this.editType.equals(EditType.SLOTS)) {
-                        this.user.openInventory(this.itemInv);
-                        return;
-                    }
+                user.sendPluginMessage(Plugin.DECO,
+                        ChatColor.PERSONAL + "Tool: " + ChatColor.VALUE + this.editType.name().toLowerCase());
 
-                    break;
+                if (this.editType.equals(EditType.SLOTS)) {
+                    this.user.openInventory(this.itemInv);
+                    return;
                 }
             }
         } else if (event.getInventory().equals(this.bodyPartInv.getInventory())) {
-            for (Map.Entry<ExItemStack, BodyPart> entry : BODY_PARTS_BY_ITEM.entrySet()) {
-                if (item.equals(entry.getKey())) {
-                    this.bodyPart = entry.getValue();
-                    break;
-                }
+            BodyPart bodyPart = BODY_PARTS_BY_ITEM.get(item);
+            if (bodyPart != null) {
+                this.bodyPart = bodyPart;
             }
 
-            for (Map.Entry<ExItemStack, Axis> entry : AXIS_BY_ITEM.entrySet()) {
-                if (item.equals(entry.getKey())) {
-                    this.axis = entry.getValue();
+            Axis axis = AXIS_BY_ITEM.get(item);
+            if (axis != null) {
+                this.axis = axis;
+            }
+
+            if (item.equals(ANGLE_MULTIPLIER_ITEM)) {
+                this.angleMultiplier *= 2;
+
+                if (this.angleMultiplier > 4) {
+                    this.angleMultiplier = 1;
                 }
+
+                this.bodyPartInv.setItemStack(ANGLE_MULTIPLIER_ITEM.cloneWithId().asQuantity(this.angleMultiplier));
+                event.getUser().updateInventory();
+                return;
             }
         }
 
@@ -252,7 +266,7 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
     private void editAngle(boolean invert) {
         BodyPart bodyPart = this.bodyPart;
 
-        double angle = invert ? -ANGLE : ANGLE;
+        double angle = invert ? -(this.angleMultiplier * ANGLE) : (this.angleMultiplier * ANGLE);
 
         this.armorStand.setVisible(false);
         switch (bodyPart) {
