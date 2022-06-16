@@ -25,12 +25,10 @@ public class DecoCmd implements CommandListener {
         User user = sender.getUser();
 
         switch (args.getString(0).toLowerCase()) {
-            case "heads":
-            case "head":
+            case "heads", "head" -> {
                 if (!sender.hasPermission("exdecoration.heads", 2901)) {
                     return;
                 }
-
                 if (args.isLengthEquals(2, false) && args.getString(1).equalsIgnoreCase("reload")) {
                     if (!sender.hasPermission("exdecoration.heads.reload", 2902)) {
                         return;
@@ -38,27 +36,20 @@ public class DecoCmd implements CommandListener {
 
                     DecoManager.getInstance().getHeadsManager().reloadHeads();
                 }
-
                 user.openInventory(DecoManager.getInstance().getHeadsManager().getFirstPageInventory());
-
-                break;
-            case "stand":
-            case "armorstand":
+            }
+            case "stand", "armorstand" -> {
                 if (!sender.hasPermission("exdecoration.armorstand", 2902)) {
                     return;
                 }
-
                 StandEditor editor = new StandEditor(user);
                 user.addItem(editor.getTool());
                 user.addItem(editor.getAngleTool());
-
-                break;
-            case "frame":
-            case "itemframe":
+            }
+            case "frame", "itemframe" -> {
                 if (!sender.hasPermission("exdecoration.itemframe", 2903)) {
                     return;
                 }
-
                 user.addItem(DecoManager.getInstance().getItemFrameManager().getItemFrameItem());
         }
     }

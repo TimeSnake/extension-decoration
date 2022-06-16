@@ -26,7 +26,8 @@ import org.bukkit.util.EulerAngle;
 import java.util.HashMap;
 import java.util.List;
 
-public class StandEditor implements Listener, UserInventoryInteractListener, UserInventoryClickListener, InventoryHolder {
+public class StandEditor implements Listener, UserInventoryInteractListener, UserInventoryClickListener,
+        InventoryHolder {
 
     private static final Double LEG_HEIGHT = 0.8;
     private static final Double ARM_HEIGHT = 1.4;
@@ -34,29 +35,33 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
     private static final double ANGLE = 0.0625 / 4 * (2 * Math.PI);
 
     private static final HashMap<ExItemStack, EditType> EDIT_TYPES_BY_ITEM = new HashMap<>();
+    private static final HashMap<ExItemStack, BodyPart> BODY_PARTS_BY_ITEM = new HashMap<>();
+    private static final HashMap<ExItemStack, Axis> AXIS_BY_ITEM = new HashMap<>();
+    private static final ExItemStack ANGLE_MULTIPLIER_ITEM = new ExItemStack(51, Material.CLOCK, "§6Angle Multiplier");
+    private static final ExItemStack PLACE_HOLDER = new ExItemStack(Material.GRAY_STAINED_GLASS_PANE, "");
 
     static {
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(0, Material.FEATHER, "§6Visibility", List.of("§fSet the visibility of an armorstand")), EditType.VISIBLE);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(1, Material.SMOOTH_STONE_SLAB, "§6Base Plate", List.of("§fSet the base plate visibility of an armorstand")), EditType.BASE_PLATE);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(2, Material.STICK, "§6Arms", List.of("§fSet the arm visibility of an armorstand")), EditType.ARMS);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(3, Material.EGG, "§6Small", List.of("§fSet the size of an armorstand")), EditType.SMALL);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(4, Material.LEVER, "§6Lock", List.of("§fLock the the items of an armorstand")), EditType.LOCK);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(5, Material.DEAD_BUSH, "§6Slots", List.of("§fSet the items slots of an armorstand")), EditType.SLOTS);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(6, Material.COMPASS, "§6Reset Rotations", List.of("§fResets the rotations of an armorstand")), EditType.RESET_ROTATION);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(7, Material.BEDROCK, "§6Gravity", List.of("§fToggles the gravity of an armorstand")), EditType.GRAVITY);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(9, Material.ARMOR_STAND, "§6Copy", List.of("§fCopy an existent armorstand")), EditType.COPY);
-        EDIT_TYPES_BY_ITEM.put(new ExItemStack(10, Material.ARMOR_STAND, "§6Paste", List.of("§fPaste the copied or last edited armorstand on your location")), EditType.PASTE);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(0, Material.FEATHER, "§6Visibility", List.of("§fSet the visibility of " +
+                "an armorstand")), EditType.VISIBLE);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(1, Material.SMOOTH_STONE_SLAB, "§6Base Plate", List.of("§fSet the base" +
+                " plate visibility of an armorstand")), EditType.BASE_PLATE);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(2, Material.STICK, "§6Arms", List.of("§fSet the arm visibility of an " +
+                "armorstand")), EditType.ARMS);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(3, Material.EGG, "§6Small",
+                List.of("§fSet the size of an armorstand")), EditType.SMALL);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(4, Material.LEVER, "§6Lock", List.of("§fLock the the items of an " +
+                "armorstand")), EditType.LOCK);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(5, Material.DEAD_BUSH, "§6Slots", List.of("§fSet the items slots of an" +
+                " armorstand")), EditType.SLOTS);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(6, Material.COMPASS, "§6Reset Rotations", List.of("§fResets the " +
+                "rotations of an armorstand")), EditType.RESET_ROTATION);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(7, Material.BEDROCK, "§6Gravity", List.of("§fToggles the gravity of an" +
+                " armorstand")), EditType.GRAVITY);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(9, Material.ARMOR_STAND, "§6Copy", List.of("§fCopy an existent " +
+                "armorstand")), EditType.COPY);
+        EDIT_TYPES_BY_ITEM.put(new ExItemStack(10, Material.ARMOR_STAND, "§6Paste", List.of("§fPaste the copied or " +
+                "last edited armorstand on your location")), EditType.PASTE);
     }
-
-    public enum BodyPart {
-        BODY, HEAD, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG
-    }
-
-    public enum Axis {
-        FRONT, SIDE, ROTATION
-    }
-
-    private static final HashMap<ExItemStack, BodyPart> BODY_PARTS_BY_ITEM = new HashMap<>();
 
     static {
         BODY_PARTS_BY_ITEM.put(new ExItemStack(11, Material.PLAYER_HEAD, "§6Head"), BodyPart.HEAD);
@@ -67,36 +72,23 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         BODY_PARTS_BY_ITEM.put(new ExItemStack(28, Material.RABBIT_FOOT, "§6Left Leg"), BodyPart.LEFT_LEG);
     }
 
-    private static final HashMap<ExItemStack, Axis> AXIS_BY_ITEM = new HashMap<>();
-
-    private static final ExItemStack ANGLE_MULTIPLIER_ITEM = new ExItemStack(51, Material.CLOCK, "§6Angle Multiplier");
-
     static {
         AXIS_BY_ITEM.put(new ExItemStack(15, Material.PLAYER_HEAD, "§6Front"), Axis.FRONT);
         AXIS_BY_ITEM.put(new ExItemStack(24, Material.STICK, "§6Side"), Axis.SIDE);
         AXIS_BY_ITEM.put(new ExItemStack(33, Material.COMPASS, "§6Rotation"), Axis.ROTATION);
     }
 
-    private static final ExItemStack PLACE_HOLDER = new ExItemStack(Material.GRAY_STAINED_GLASS_PANE, "");
-
-
     private final ExItemStack tool = new ExItemStack(Material.EMERALD, "§6Armor Stand Tool");
     private final ExItemStack angleTool = new ExItemStack(Material.FEATHER, "§6Angle Tool");
-
     private final User user;
-
-    private ArmorStand armorStand;
-
     private final ExInventory toolInv;
     private final ExInventory itemInv;
-
     private final ExInventory bodyPartInv;
-
+    private ArmorStand armorStand;
     private EditType editType = EditType.ARMS;
     private BodyPart bodyPart = BodyPart.HEAD;
     private Axis axis = Axis.FRONT;
     private int angleMultiplier = 4;
-
     public StandEditor(User user) {
         this.user = user;
 
@@ -150,19 +142,24 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
                 break;
             case ARMS:
                 this.armorStand.setArms(!this.armorStand.hasArms());
-                user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Arms: " + ChatColor.VALUE + this.armorStand.hasArms());
+                user.sendPluginMessage(Plugin.DECO,
+                        ChatColor.PERSONAL + "Arms: " + ChatColor.VALUE + this.armorStand.hasArms());
                 break;
             case SMALL:
                 this.armorStand.setSmall(!this.armorStand.isSmall());
-                user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Small: " + ChatColor.VALUE + this.armorStand.isSmall());
+                user.sendPluginMessage(Plugin.DECO,
+                        ChatColor.PERSONAL + "Small: " + ChatColor.VALUE + this.armorStand.isSmall());
                 break;
             case LOCK:
                 if (this.armorStand.isSlotDisabled(EquipmentSlot.FEET)) {
-                    this.armorStand.removeDisabledSlots(EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND);
+                    this.armorStand.removeDisabledSlots(EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST,
+                            EquipmentSlot.HEAD, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND);
                 } else {
-                    this.armorStand.setDisabledSlots(EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND);
+                    this.armorStand.setDisabledSlots(EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST,
+                            EquipmentSlot.HEAD, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND);
                 }
-                user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Locked: " + ChatColor.VALUE + this.armorStand.isSlotDisabled(EquipmentSlot.FEET));
+                user.sendPluginMessage(Plugin.DECO,
+                        ChatColor.PERSONAL + "Locked: " + ChatColor.VALUE + this.armorStand.isSlotDisabled(EquipmentSlot.FEET));
                 break;
             case SLOTS:
                 this.armorStand.setItem(EquipmentSlot.HAND, this.itemInv.getInventory().getItem(11));
@@ -183,7 +180,8 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
                 break;
             case GRAVITY:
                 this.armorStand.setGravity(!this.armorStand.hasGravity());
-                user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "Gravity: " + ChatColor.VALUE + this.armorStand.hasGravity());
+                user.sendPluginMessage(Plugin.DECO,
+                        ChatColor.PERSONAL + "Gravity: " + ChatColor.VALUE + this.armorStand.hasGravity());
                 break;
             default:
                 user.sendPluginMessage(Plugin.DECO, ChatColor.PERSONAL + "No tool selected");
@@ -272,22 +270,28 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         switch (bodyPart) {
             case BODY:
 
-                this.armorStand.setBodyPose(this.armorStand.getBodyPose().add(this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.SIDE ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
+                this.armorStand.setBodyPose(this.armorStand.getBodyPose().add(this.axis == Axis.ROTATION ? angle : 0,
+                        this.axis == Axis.SIDE ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
                 break;
             case HEAD:
-                this.armorStand.setHeadPose(this.armorStand.getHeadPose().add(this.axis == Axis.SIDE ? angle : 0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
+                this.armorStand.setHeadPose(this.armorStand.getHeadPose().add(this.axis == Axis.SIDE ? angle : 0,
+                        this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
                 break;
             case LEFT_ARM:
-                this.armorStand.setLeftArmPose(this.armorStand.getLeftArmPose().add(this.axis == Axis.SIDE ? angle : 0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
+                this.armorStand.setLeftArmPose(this.armorStand.getLeftArmPose().add(this.axis == Axis.SIDE ? angle :
+                        0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
                 break;
             case LEFT_LEG:
-                this.armorStand.setLeftLegPose(this.armorStand.getLeftLegPose().add(this.axis == Axis.SIDE ? angle : 0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
+                this.armorStand.setLeftLegPose(this.armorStand.getLeftLegPose().add(this.axis == Axis.SIDE ? angle :
+                        0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
                 break;
             case RIGHT_ARM:
-                this.armorStand.setRightArmPose(this.armorStand.getRightArmPose().add(this.axis == Axis.SIDE ? angle : 0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
+                this.armorStand.setRightArmPose(this.armorStand.getRightArmPose().add(this.axis == Axis.SIDE ? angle
+                        : 0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
                 break;
             case RIGHT_LEG:
-                this.armorStand.setRightLegPose(this.armorStand.getRightLegPose().add(this.axis == Axis.SIDE ? angle : 0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
+                this.armorStand.setRightLegPose(this.armorStand.getRightLegPose().add(this.axis == Axis.SIDE ? angle
+                        : 0, this.axis == Axis.ROTATION ? angle : 0, this.axis == Axis.FRONT ? angle : 0));
                 break;
         }
         this.armorStand.setVisible(true);
@@ -326,7 +330,6 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         }
     }
 
-
     @Override
     public void onUserInventoryInteract(UserInventoryInteractEvent event) {
 
@@ -345,7 +348,9 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         } else if ((action.equals(Action.RIGHT_CLICK_BLOCK) || action.equals(Action.RIGHT_CLICK_AIR))) {
 
             if (this.editType == EditType.PASTE) {
-                ArmorStand armorStand = (org.bukkit.entity.ArmorStand) user.getExWorld().spawnEntity(user.getPlayer().getLocation(), EntityType.ARMOR_STAND);
+                ArmorStand armorStand =
+                        (org.bukkit.entity.ArmorStand) user.getExWorld().spawnEntity(user.getPlayer().getLocation(),
+                                EntityType.ARMOR_STAND);
                 armorStand.setVisible(this.armorStand.isVisible());
                 armorStand.setArms(this.armorStand.hasArms());
                 armorStand.setRightArmPose(this.armorStand.getRightArmPose());
@@ -366,8 +371,33 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
         event.setCancelled(true);
     }
 
+    public enum BodyPart {
+        BODY,
+        HEAD,
+        LEFT_ARM,
+        RIGHT_ARM,
+        LEFT_LEG,
+        RIGHT_LEG
+    }
+
+
+    public enum Axis {
+        FRONT,
+        SIDE,
+        ROTATION
+    }
+
     public enum EditType {
-        VISIBLE, BASE_PLATE, ARMS, SMALL, COPY, PASTE, LOCK, SLOTS, RESET_ROTATION, GRAVITY
+        VISIBLE,
+        BASE_PLATE,
+        ARMS,
+        SMALL,
+        COPY,
+        PASTE,
+        LOCK,
+        SLOTS,
+        RESET_ROTATION,
+        GRAVITY
     }
 
 }

@@ -11,15 +11,16 @@ public class ExDecoration extends JavaPlugin {
 
     private static ExDecoration plugin;
 
+    public static ExDecoration getPlugin() {
+        return plugin;
+    }
+
     @Override
     public void onEnable() {
         plugin = this;
 
-        Server.getCommandManager().addCommand(this, "decoration", List.of("deco", "decos", "decorations"), new DecoCmd(), Plugin.DECO);
+        Server.getCommandManager().addCommand(this, "decoration", List.of("deco", "decos", "decorations"),
+                new DecoCmd(), Plugin.DECO);
 
-    }
-
-    public static ExDecoration getPlugin() {
-        return plugin;
     }
 }
