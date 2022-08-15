@@ -14,49 +14,6 @@ import java.util.UUID;
 
 public class Head {
 
-    private final String section;
-    private final String name;
-    private final String url;
-    private ExItemStack item;
-
-    public Head(DbHead head) {
-        this.name = head.getName();
-        this.section = head.getSection();
-        this.url = "https://textures.minecraft.net/texture/" + head.getTag();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        PropertyMap propertyMap = profile.getProperties();
-        if (propertyMap == null) {
-            throw new IllegalStateException("Profile doesn't contain a property map");
-        }
-        byte[] encodedData = new Base64().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
-        propertyMap.put("textures", new Property("textures", new String(encodedData)));
-
-        this.item = new ExItemStack(Material.PLAYER_HEAD);
-
-        ItemMeta headMeta = this.item.getItemMeta();
-        Class<?> headMetaClass = headMeta.getClass();
-        Head.getField(headMetaClass, "profile", GameProfile.class, 0).set(headMeta, profile);
-        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-        this.item.setItemMeta(headMeta);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public ExItemStack getItem() {
-        return item;
-    }
-
-
     static <T> FieldAccessor<T> getField(Class<?> target, String name, Class<T> fieldType, int index) {
         for (final Field field : target.getDeclaredFields()) {
             if ((name == null || field.getName().equals(name)) && fieldType.isAssignableFrom(field.getType()) && index-- <= 0) {
@@ -97,29 +54,55 @@ public class Head {
         throw new IllegalArgumentException("Cannot find field with type " + fieldType);
     }
 
+    private final String section;
+    private final String name;
+    private final String url;
+    private ExItemStack item;
+
+    public Head(DbHead head) {
+        this.name = head.getName();
+        this.section = head.getSection();
+        this.url = "https://textures.minecraft.net/texture/" + head.getTag();
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        PropertyMap propertyMap = profile.getProperties();
+        if (propertyMap == null) {
+            throw new IllegalStateException("Profile doesn't contain a property map");
+        }
+        byte[] encodedData = new Base64().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
+        propertyMap.put("textures", new Property("textures", new String(encodedData)));
+
+        this.item = new ExItemStack(Material.PLAYER_HEAD);
+
+        ItemMeta headMeta = this.item.getItemMeta();
+        Class<?> headMetaClass = headMeta.getClass();
+        Head.getField(headMetaClass, "profile", GameProfile.class, 0).set(headMeta, profile);
+        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+        this.item.setItemMeta(headMeta);
+
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public ExItemStack getItem() {
+        return item;
+    }
+
     public interface FieldAccessor<T> {
-        /**
-         * Retrieve the content of a field.
-         *
-         * @param target the target object, or NULL for a static field
-         * @return the value of the field
-         */
+
         T get(Object target);
 
-        /**
-         * Set the content of a field.
-         *
-         * @param target the target object, or NULL for a static field
-         * @param value  the new value of the field
-         */
         void set(Object target, Object value);
 
-        /**
-         * Determine if the given object has this field.
-         *
-         * @param target the object to test
-         * @return TRUE if it does, FALSE otherwise
-         */
         boolean hasField(Object target);
     }
 }
