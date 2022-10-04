@@ -5,12 +5,19 @@ import de.timesnake.basic.bukkit.util.chat.CommandListener;
 import de.timesnake.basic.bukkit.util.chat.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.extension.decoration.armorstand.StandEditor;
+import de.timesnake.library.extension.util.chat.Code;
+import de.timesnake.library.extension.util.chat.Plugin;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
 
 import java.util.List;
 
 public class DecoCmd implements CommandListener {
+
+    private Code.Permission headsPerm;
+    private Code.Permission reloadPerm;
+    private Code.Permission armorstandPerm;
+    private Code.Permission itemframePerm;
 
     @Override
     public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
@@ -26,11 +33,11 @@ public class DecoCmd implements CommandListener {
 
         switch (args.getString(0).toLowerCase()) {
             case "heads", "head" -> {
-                if (!sender.hasPermission("exdecoration.heads", 2901)) {
+                if (!sender.hasPermission(this.headsPerm)) {
                     return;
                 }
                 if (args.isLengthEquals(2, false) && args.getString(1).equalsIgnoreCase("reload")) {
-                    if (!sender.hasPermission("exdecoration.heads.reload", 2902)) {
+                    if (!sender.hasPermission(this.reloadPerm)) {
                         return;
                     }
 
@@ -39,7 +46,7 @@ public class DecoCmd implements CommandListener {
                 user.openInventory(DecoManager.getInstance().getHeadsManager().getFirstPageInventory());
             }
             case "stand", "armorstand" -> {
-                if (!sender.hasPermission("exdecoration.armorstand", 2902)) {
+                if (!sender.hasPermission(this.armorstandPerm)) {
                     return;
                 }
                 StandEditor editor = new StandEditor(user);
@@ -47,10 +54,11 @@ public class DecoCmd implements CommandListener {
                 user.addItem(editor.getAngleTool());
             }
             case "frame", "itemframe" -> {
-                if (!sender.hasPermission("exdecoration.itemframe", 2903)) {
+                if (!sender.hasPermission(this.itemframePerm)) {
                     return;
                 }
                 user.addItem(DecoManager.getInstance().getItemFrameManager().getItemFrameItem());
+            }
         }
     }
 
@@ -60,5 +68,13 @@ public class DecoCmd implements CommandListener {
             return List.of("heads", "stand", "armorstand", "frame", "itemframe");
         }
         return null;
+    }
+
+    @Override
+    public void loadCodes(Plugin plugin) {
+        this.headsPerm = plugin.createPermssionCode("hed", "exdecoration.heads");
+        this.reloadPerm = plugin.createPermssionCode("hed", "exdecoration.heads.reload");
+        this.armorstandPerm = plugin.createPermssionCode("ast", "exdecoration.armorstand");
+        this.itemframePerm = plugin.createPermssionCode("itf", "exdecoration.itemframe");
     }
 }
