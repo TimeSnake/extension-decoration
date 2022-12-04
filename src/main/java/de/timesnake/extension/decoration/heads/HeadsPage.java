@@ -1,5 +1,5 @@
 /*
- * extension-decoration.main
+ * workspace.extension-decoration.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.extension.decoration.deco.DecoManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -62,7 +63,7 @@ public class HeadsPage implements UserInventoryClickListener, InventoryHolder {
         listenerItems.add(previousPage);
         listenerItems.add(nextPage);
 
-        this.inventory = Server.createExInventory(6 * 9, this.name, this);
+        this.inventory = new ExInventory(6 * 9, Component.text(this.name), this);
         this.inventory.setItemStack(this.pageHeader);
         this.inventory.setItemStack(this.previousPage);
         this.inventory.setItemStack(this.nextPage);
