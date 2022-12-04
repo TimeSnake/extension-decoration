@@ -1,5 +1,5 @@
 /*
- * extension-decoration.main
+ * workspace.extension-decoration.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -112,13 +112,13 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
     public StandEditor(User user) {
         this.user = user;
 
-        this.toolInv = Server.createExInventory(18, "Armorstand Tool", this);
+        this.toolInv = new ExInventory(18, Component.text("Armorstand Tool"), this);
 
         for (ExItemStack item : EDIT_TYPES_BY_ITEM.keySet()) {
             this.toolInv.setItemStack(item);
         }
 
-        this.itemInv = Server.createExInventory(18, "Armorstand Items", this);
+        this.itemInv = new ExInventory(18, Component.text("Armorstand Items"), this);
         this.itemInv.setItemStack(0, new ExItemStack(Material.STICK, "§6Left Arm"));
         this.itemInv.setItemStack(1, new ExItemStack(Material.PLAYER_HEAD, "§6Head"));
         this.itemInv.setItemStack(2, new ExItemStack(Material.STICK, "§6Right Arm"));
@@ -130,7 +130,7 @@ public class StandEditor implements Listener, UserInventoryInteractListener, Use
             }
         }
 
-        this.bodyPartInv = Server.createExInventory(54, "Armorstand Body Parts", this);
+        this.bodyPartInv = new ExInventory(54, Component.text("Armorstand Body Parts"), this);
 
         for (ExItemStack item : BODY_PARTS_BY_ITEM.keySet()) {
             this.bodyPartInv.setItemStack(item);
