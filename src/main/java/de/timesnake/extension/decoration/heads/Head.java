@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.extension.decoration.heads;
@@ -18,9 +18,11 @@ import java.util.UUID;
 
 public class Head {
 
-    static <T> FieldAccessor<T> getField(Class<?> target, String name, Class<T> fieldType, int index) {
+    static <T> FieldAccessor<T> getField(Class<?> target, String name, Class<T> fieldType,
+            int index) {
         for (final Field field : target.getDeclaredFields()) {
-            if ((name == null || field.getName().equals(name)) && fieldType.isAssignableFrom(field.getType()) && index-- <= 0) {
+            if ((name == null || field.getName().equals(name)) && fieldType.isAssignableFrom(
+                    field.getType()) && index-- <= 0) {
                 field.setAccessible(true);
 
                 // A function for retrieving a specific field value
@@ -54,7 +56,9 @@ public class Head {
         }
 
         // Search in parent classes
-        if (target.getSuperclass() != null) return getField(target.getSuperclass(), name, fieldType, index);
+        if (target.getSuperclass() != null) {
+            return getField(target.getSuperclass(), name, fieldType, index);
+        }
         throw new IllegalArgumentException("Cannot find field with type " + fieldType);
     }
 
@@ -72,7 +76,8 @@ public class Head {
         if (propertyMap == null) {
             throw new IllegalStateException("Profile doesn't contain a property map");
         }
-        byte[] encodedData = new Base64().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
+        byte[] encodedData = new Base64().encode(
+                String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
         propertyMap.put("textures", new Property("textures", new String(encodedData)));
 
         this.item = new ExItemStack(Material.PLAYER_HEAD);

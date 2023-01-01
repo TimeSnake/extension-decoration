@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.extension.decoration.heads;
@@ -110,7 +110,8 @@ public class HeadsPage implements UserInventoryClickListener, InventoryHolder {
         } else if (item.equals(this.previousPage)) {
             HeadsPage previousPage = headsManager.getPagesByNumber().get(this.pageNumber - 1);
             if (previousPage == null) {
-                user.openInventory(headsManager.getPagesByNumber().get(headsManager.getPages()).getInventory());
+                user.openInventory(headsManager.getPagesByNumber().get(headsManager.getPages())
+                        .getInventory());
                 return;
             }
             user.openInventory(previousPage.getInventory());
