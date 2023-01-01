@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.extension.decoration.deco;
@@ -33,10 +33,11 @@ public class PictureMapManager {
         switch (scaleType) {
             case WIDTH -> image = (BufferedImage) image.getScaledInstance(width * 128,
                     (int) (width * 128 / ((double) image.getWidth(null))), Image.SCALE_DEFAULT);
-            case HEIGHT ->
-                    image = (BufferedImage) image.getScaledInstance((int) (height * 128 / ((double) image.getHeight(null))),
-                            height * 128, Image.SCALE_DEFAULT);
-            case CUSTOM -> image = (BufferedImage) image.getScaledInstance(width * 128, height * 128, 0);
+            case HEIGHT -> image = (BufferedImage) image.getScaledInstance(
+                    (int) (height * 128 / ((double) image.getHeight(null))),
+                    height * 128, Image.SCALE_DEFAULT);
+            case CUSTOM ->
+                    image = (BufferedImage) image.getScaledInstance(width * 128, height * 128, 0);
         }
 
         MapDisplayBuilder displayBuilder = new MapDisplayBuilder(width, height);

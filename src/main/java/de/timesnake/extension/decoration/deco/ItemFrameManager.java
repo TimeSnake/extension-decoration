@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.extension.decoration.deco;
@@ -18,7 +18,8 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class ItemFrameManager implements Listener {
 
-    private static final NamespacedKey KEY = new NamespacedKey(ExDecoration.getPlugin(), "invisible");
+    private static final NamespacedKey KEY = new NamespacedKey(ExDecoration.getPlugin(),
+            "invisible");
 
     public ItemFrameManager() {
         Server.registerListener(this, ExDecoration.getPlugin());

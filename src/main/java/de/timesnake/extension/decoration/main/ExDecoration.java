@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.extension.decoration.main;
@@ -23,8 +23,9 @@ public class ExDecoration extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
-        Server.getCommandManager().addCommand(this, "decoration", List.of("deco", "decos", "decorations"),
-                new DecoCmd(), Plugin.DECO);
+        Server.getCommandManager()
+                .addCommand(this, "decoration", List.of("deco", "decos", "decorations"),
+                        new DecoCmd(), Plugin.DECO);
 
     }
 }

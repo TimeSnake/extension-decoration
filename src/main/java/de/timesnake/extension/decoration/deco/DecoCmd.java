@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.extension.decoration.deco;
@@ -24,7 +24,8 @@ public class DecoCmd implements CommandListener {
     private Code.Permission itemframePerm;
 
     @Override
-    public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
+    public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
+            Arguments<Argument> args) {
         if (!args.isLengthHigherEquals(1, true)) {
             return;
         }
@@ -47,7 +48,8 @@ public class DecoCmd implements CommandListener {
 
                     DecoManager.getInstance().getHeadsManager().reloadHeads();
                 }
-                user.openInventory(DecoManager.getInstance().getHeadsManager().getFirstPageInventory());
+                user.openInventory(
+                        DecoManager.getInstance().getHeadsManager().getFirstPageInventory());
             }
             case "stand", "armorstand" -> {
                 if (!sender.hasPermission(this.armorstandPerm)) {
@@ -67,7 +69,8 @@ public class DecoCmd implements CommandListener {
     }
 
     @Override
-    public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
+    public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
+            Arguments<Argument> args) {
         if (args.getLength() == 1) {
             return List.of("heads", "stand", "armorstand", "frame", "itemframe");
         }
