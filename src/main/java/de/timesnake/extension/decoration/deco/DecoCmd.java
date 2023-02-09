@@ -13,15 +13,14 @@ import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.extension.util.chat.Plugin;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
-
 import java.util.List;
 
 public class DecoCmd implements CommandListener {
 
-    private Code.Permission headsPerm;
-    private Code.Permission reloadPerm;
-    private Code.Permission armorstandPerm;
-    private Code.Permission itemframePerm;
+    private Code headsPerm;
+    private Code reloadPerm;
+    private Code armorstandPerm;
+    private Code itemframePerm;
 
     @Override
     public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
@@ -79,9 +78,9 @@ public class DecoCmd implements CommandListener {
 
     @Override
     public void loadCodes(Plugin plugin) {
-        this.headsPerm = plugin.createPermssionCode("hed", "exdecoration.heads");
-        this.reloadPerm = plugin.createPermssionCode("hed", "exdecoration.heads.reload");
-        this.armorstandPerm = plugin.createPermssionCode("ast", "exdecoration.armorstand");
-        this.itemframePerm = plugin.createPermssionCode("itf", "exdecoration.itemframe");
+        this.headsPerm = plugin.createPermssionCode("exdecoration.heads");
+        this.reloadPerm = plugin.createPermssionCode("exdecoration.heads.reload");
+        this.armorstandPerm = plugin.createPermssionCode("exdecoration.armorstand");
+        this.itemframePerm = plugin.createPermssionCode("exdecoration.itemframe");
     }
 }
