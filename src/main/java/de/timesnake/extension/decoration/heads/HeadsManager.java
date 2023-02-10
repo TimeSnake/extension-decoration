@@ -4,7 +4,7 @@
 
 package de.timesnake.extension.decoration.heads;
 
-import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.decoration.DbHead;
 import org.bukkit.inventory.Inventory;
