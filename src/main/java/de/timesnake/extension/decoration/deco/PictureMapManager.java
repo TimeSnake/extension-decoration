@@ -6,7 +6,7 @@ package de.timesnake.extension.decoration.deco;
 
 import de.timesnake.basic.bukkit.util.chat.Argument;
 import de.timesnake.basic.bukkit.util.chat.Sender;
-import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.world.entity.MapDisplayBuilder;
 import de.timesnake.library.extension.util.cmd.Arguments;

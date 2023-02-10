@@ -5,13 +5,13 @@
 package de.timesnake.extension.decoration.armorstand;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.user.ExInventory;
-import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractEvent;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractListener;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractEvent;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractListener;
 import de.timesnake.extension.decoration.deco.Plugin;
 import de.timesnake.extension.decoration.main.ExDecoration;
 import de.timesnake.library.basic.util.chat.ExTextColor;

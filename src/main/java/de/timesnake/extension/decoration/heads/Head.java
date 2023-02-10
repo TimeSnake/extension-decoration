@@ -7,7 +7,7 @@ package de.timesnake.extension.decoration.heads;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.database.util.decoration.DbHead;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Material;
