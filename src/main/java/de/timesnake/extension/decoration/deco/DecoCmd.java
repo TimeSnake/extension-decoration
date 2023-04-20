@@ -9,10 +9,12 @@ import de.timesnake.basic.bukkit.util.chat.CommandListener;
 import de.timesnake.basic.bukkit.util.chat.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.extension.decoration.armorstand.StandEditor;
+import de.timesnake.extension.decoration.heads.HeadsManager;
 import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.extension.util.chat.Plugin;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DecoCmd implements CommandListener {
@@ -21,6 +23,7 @@ public class DecoCmd implements CommandListener {
     private Code reloadPerm;
     private Code armorstandPerm;
     private Code itemframePerm;
+    private Code headCreatePerm;
 
     @Override
     public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
@@ -46,9 +49,24 @@ public class DecoCmd implements CommandListener {
                     }
 
                     DecoManager.getInstance().getHeadsManager().reloadHeads();
+                } else if (args.isLengthEquals(4, false)) {
+                    sender.hasPermissionElseExit(this.headCreatePerm);
+
+                    String section = args.getString(1);
+                    String name = args.getString(2);
+                    String url = args.getString(3);
+
+                    if (url.length() != HeadsManager.URL_LENGTH) {
+                        sender.sendTDMessage("§wURL is malformed (should be 64 characters long)");
+                        return;
+                    }
+
+                    DecoManager.getInstance().getHeadsManager().addHead(section, name, url);
+                    sender.sendTDMessage("§sAdded head §v" + name);
+                } else {
+                    user.openInventory(
+                            DecoManager.getInstance().getHeadsManager().getFirstPageInventory());
                 }
-                user.openInventory(
-                        DecoManager.getInstance().getHeadsManager().getFirstPageInventory());
             }
             case "stand", "armorstand" -> {
                 if (!sender.hasPermission(this.armorstandPerm)) {
@@ -72,6 +90,12 @@ public class DecoCmd implements CommandListener {
             Arguments<Argument> args) {
         if (args.getLength() == 1) {
             return List.of("heads", "stand", "armorstand", "frame", "itemframe");
+        } else if (args.length() == 2) {
+            return new ArrayList<>(DecoManager.getInstance().getHeadsManager().getSections());
+        } else if (args.length() == 3) {
+            return List.of("<name>");
+        } else if (args.length() == 4) {
+            return List.of("<url>");
         }
         return null;
     }
@@ -82,5 +106,6 @@ public class DecoCmd implements CommandListener {
         this.reloadPerm = plugin.createPermssionCode("exdecoration.heads.reload");
         this.armorstandPerm = plugin.createPermssionCode("exdecoration.armorstand");
         this.itemframePerm = plugin.createPermssionCode("exdecoration.itemframe");
+        this.headCreatePerm = plugin.createPermssionCode("exdeco.heads.create");
     }
 }

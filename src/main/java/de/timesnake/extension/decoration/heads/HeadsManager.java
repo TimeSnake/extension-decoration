@@ -7,11 +7,16 @@ package de.timesnake.extension.decoration.heads;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.decoration.DbHead;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import org.bukkit.inventory.Inventory;
 
-import java.util.*;
-
 public class HeadsManager {
+
+    public static final int URL_LENGTH = 64;
 
     private final Map<String, Collection<Head>> headsBySection = new HashMap<>();
     private final Map<String, Head> headsByName = new HashMap<>();
@@ -66,6 +71,10 @@ public class HeadsManager {
         this.loadPages();
     }
 
+    public Collection<String> getSections() {
+        return this.headsBySection.keySet();
+    }
+
     public Map<Integer, HeadsPage> getPagesByNumber() {
         return pagesByNumber;
     }
@@ -80,5 +89,10 @@ public class HeadsManager {
 
     public Integer getPages() {
         return pages;
+    }
+
+    public void addHead(String section, String name, String url) {
+        Database.getDecorations().addHead(url, name, section);
+        this.reloadHeads();
     }
 }
