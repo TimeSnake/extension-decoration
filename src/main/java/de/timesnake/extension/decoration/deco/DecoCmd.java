@@ -19,93 +19,93 @@ import java.util.List;
 
 public class DecoCmd implements CommandListener {
 
-    private Code headsPerm;
-    private Code reloadPerm;
-    private Code armorstandPerm;
-    private Code itemframePerm;
-    private Code headCreatePerm;
+  private Code headsPerm;
+  private Code reloadPerm;
+  private Code armorstandPerm;
+  private Code itemframePerm;
+  private Code headCreatePerm;
 
-    @Override
-    public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
-            Arguments<Argument> args) {
-        if (!args.isLengthHigherEquals(1, true)) {
+  @Override
+  public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
+      Arguments<Argument> args) {
+    if (!args.isLengthHigherEquals(1, true)) {
+      return;
+    }
+
+    if (!sender.isPlayer(true)) {
+      return;
+    }
+
+    User user = sender.getUser();
+
+    switch (args.getString(0).toLowerCase()) {
+      case "heads", "head" -> {
+        if (!sender.hasPermission(this.headsPerm)) {
+          return;
+        }
+        if (args.isLengthEquals(2, false) && args.getString(1).equalsIgnoreCase("reload")) {
+          if (!sender.hasPermission(this.reloadPerm)) {
             return;
-        }
+          }
 
-        if (!sender.isPlayer(true)) {
+          DecoManager.getInstance().getHeadsManager().reloadHeads();
+        } else if (args.isLengthEquals(4, false)) {
+          sender.hasPermissionElseExit(this.headCreatePerm);
+
+          String section = args.getString(1);
+          String name = args.getString(2);
+          String url = args.getString(3);
+
+          if (url.length() != HeadsManager.URL_LENGTH) {
+            sender.sendTDMessage("§wURL is malformed (should be 64 characters long)");
             return;
+          }
+
+          DecoManager.getInstance().getHeadsManager().addHead(section, name, url);
+          sender.sendTDMessage("§sAdded head §v" + name);
+        } else {
+          user.openInventory(
+              DecoManager.getInstance().getHeadsManager().getFirstPageInventory());
         }
-
-        User user = sender.getUser();
-
-        switch (args.getString(0).toLowerCase()) {
-            case "heads", "head" -> {
-                if (!sender.hasPermission(this.headsPerm)) {
-                    return;
-                }
-                if (args.isLengthEquals(2, false) && args.getString(1).equalsIgnoreCase("reload")) {
-                    if (!sender.hasPermission(this.reloadPerm)) {
-                        return;
-                    }
-
-                    DecoManager.getInstance().getHeadsManager().reloadHeads();
-                } else if (args.isLengthEquals(4, false)) {
-                    sender.hasPermissionElseExit(this.headCreatePerm);
-
-                    String section = args.getString(1);
-                    String name = args.getString(2);
-                    String url = args.getString(3);
-
-                    if (url.length() != HeadsManager.URL_LENGTH) {
-                        sender.sendTDMessage("§wURL is malformed (should be 64 characters long)");
-                        return;
-                    }
-
-                    DecoManager.getInstance().getHeadsManager().addHead(section, name, url);
-                    sender.sendTDMessage("§sAdded head §v" + name);
-                } else {
-                    user.openInventory(
-                            DecoManager.getInstance().getHeadsManager().getFirstPageInventory());
-                }
-            }
-            case "stand", "armorstand" -> {
-                if (!sender.hasPermission(this.armorstandPerm)) {
-                    return;
-                }
-                StandEditor editor = new StandEditor(user);
-                user.addItem(editor.getTool());
-                user.addItem(editor.getAngleTool());
-            }
-            case "frame", "itemframe" -> {
-                if (!sender.hasPermission(this.itemframePerm)) {
-                    return;
-                }
-                user.addItem(DecoManager.getInstance().getItemFrameManager().getItemFrameItem());
-            }
+      }
+      case "stand", "armorstand" -> {
+        if (!sender.hasPermission(this.armorstandPerm)) {
+          return;
         }
-    }
-
-    @Override
-    public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
-            Arguments<Argument> args) {
-        if (args.getLength() == 1) {
-            return List.of("heads", "stand", "armorstand", "frame", "itemframe");
-        } else if (args.length() == 2) {
-            return new ArrayList<>(DecoManager.getInstance().getHeadsManager().getSections());
-        } else if (args.length() == 3) {
-            return List.of("<name>");
-        } else if (args.length() == 4) {
-            return List.of("<url>");
+        StandEditor editor = new StandEditor(user);
+        user.addItem(editor.getTool());
+        user.addItem(editor.getAngleTool());
+      }
+      case "frame", "itemframe" -> {
+        if (!sender.hasPermission(this.itemframePerm)) {
+          return;
         }
-        return null;
+        user.addItem(DecoManager.getInstance().getItemFrameManager().getItemFrameItem());
+      }
     }
+  }
 
-    @Override
-    public void loadCodes(Plugin plugin) {
-        this.headsPerm = plugin.createPermssionCode("exdecoration.heads");
-        this.reloadPerm = plugin.createPermssionCode("exdecoration.heads.reload");
-        this.armorstandPerm = plugin.createPermssionCode("exdecoration.armorstand");
-        this.itemframePerm = plugin.createPermssionCode("exdecoration.itemframe");
-        this.headCreatePerm = plugin.createPermssionCode("exdeco.heads.create");
+  @Override
+  public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
+      Arguments<Argument> args) {
+    if (args.getLength() == 1) {
+      return List.of("heads", "stand", "armorstand", "frame", "itemframe");
+    } else if (args.length() == 2) {
+      return new ArrayList<>(DecoManager.getInstance().getHeadsManager().getSections());
+    } else if (args.length() == 3) {
+      return List.of("<name>");
+    } else if (args.length() == 4) {
+      return List.of("<url>");
     }
+    return null;
+  }
+
+  @Override
+  public void loadCodes(Plugin plugin) {
+    this.headsPerm = plugin.createPermssionCode("exdecoration.heads");
+    this.reloadPerm = plugin.createPermssionCode("exdecoration.heads.reload");
+    this.armorstandPerm = plugin.createPermssionCode("exdecoration.armorstand");
+    this.itemframePerm = plugin.createPermssionCode("exdecoration.itemframe");
+    this.headCreatePerm = plugin.createPermssionCode("exdeco.heads.create");
+  }
 }
