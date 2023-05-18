@@ -1,5 +1,11 @@
+group = project.group
+version = '1.0-SNAPSHOT'
+archivesBaseName = 'extension-decoration'
+var projectId = 36
+
 repositories {
   mavenLocal()
+  mavenCentral()
   maven {
     url = uri 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
   }
@@ -31,10 +37,6 @@ dependencies {
   compileOnly project.spigot
 }
 
-group = project.group
-version = '1.0-SNAPSHOT'
-archivesBaseName = 'extension-decoration'
-
 task deleteOldPluginJar(type: Delete) {
   delete fileTree(dir: "${project.plugins_dir}", include: "**/${archivesBaseName}-*.jar")
   onlyIf {
@@ -52,3 +54,15 @@ task copyJarToPlugins(type: Copy) {
 
 copyJarToPlugins.dependsOn(deleteOldPluginJar)
 jar.finalizedBy(copyJarToPlugins)
+
+publishing {
+  repositories {
+    maven {
+      url getDeployUrl(projectId)
+      credentials {
+        username = deploy_token_name
+        password = deploy_token_key
+      }
+    }
+  }
+}
