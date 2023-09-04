@@ -7,7 +7,7 @@ plugins {
 }
 
 group = project.group
-version = '1-1.1'
+version = '1.1'
 archivesBaseName = 'extension-decoration'
 var projectId = 36
 
@@ -77,6 +77,13 @@ publishing {
         username = deploy_token_name
         password = deploy_token_key
       }
+
+    }
+  }
+
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
     }
   }
 }
