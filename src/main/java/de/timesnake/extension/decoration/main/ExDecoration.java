@@ -7,8 +7,9 @@ package de.timesnake.extension.decoration.main;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.extension.decoration.deco.DecoCmd;
 import de.timesnake.extension.decoration.deco.Plugin;
-import java.util.List;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
 
 public class ExDecoration extends JavaPlugin {
 
@@ -22,9 +23,8 @@ public class ExDecoration extends JavaPlugin {
   public void onEnable() {
     plugin = this;
 
-    Server.getCommandManager()
-        .addCommand(this, "decoration", List.of("deco", "decos", "decorations"),
-            new DecoCmd(), Plugin.DECO);
+    Server.getCommandManager().addCommand(this, "decoration",
+        List.of("deco", "decos", "decorations"), new DecoCmd(), Plugin.DECO);
 
   }
 }

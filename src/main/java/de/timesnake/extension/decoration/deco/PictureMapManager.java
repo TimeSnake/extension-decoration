@@ -4,18 +4,19 @@
 
 package de.timesnake.extension.decoration.deco;
 
-import de.timesnake.basic.bukkit.util.chat.Argument;
-import de.timesnake.basic.bukkit.util.chat.Sender;
+import de.timesnake.basic.bukkit.util.chat.cmd.Argument;
+import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.world.entity.MapDisplayBuilder;
-import de.timesnake.library.extension.util.cmd.Arguments;
-import java.awt.Image;
+import de.timesnake.library.commands.simple.Arguments;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import javax.imageio.ImageIO;
 
 public class PictureMapManager {
 

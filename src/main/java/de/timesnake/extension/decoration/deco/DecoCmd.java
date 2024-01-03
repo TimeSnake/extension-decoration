@@ -4,30 +4,28 @@
 
 package de.timesnake.extension.decoration.deco;
 
-import de.timesnake.basic.bukkit.util.chat.Argument;
-import de.timesnake.basic.bukkit.util.chat.CommandListener;
-import de.timesnake.basic.bukkit.util.chat.Sender;
+import de.timesnake.basic.bukkit.util.chat.cmd.Argument;
+import de.timesnake.basic.bukkit.util.chat.cmd.CommandListener;
+import de.timesnake.basic.bukkit.util.chat.cmd.Completion;
+import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.extension.decoration.armorstand.StandEditor;
 import de.timesnake.extension.decoration.heads.HeadsManager;
+import de.timesnake.library.commands.PluginCommand;
+import de.timesnake.library.commands.simple.Arguments;
 import de.timesnake.library.extension.util.chat.Code;
-import de.timesnake.library.extension.util.chat.Plugin;
-import de.timesnake.library.extension.util.cmd.Arguments;
-import de.timesnake.library.extension.util.cmd.ExCommand;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DecoCmd implements CommandListener {
 
-  private Code headsPerm;
-  private Code reloadPerm;
-  private Code armorstandPerm;
-  private Code itemframePerm;
-  private Code headCreatePerm;
+  private final Code perm = Plugin.DECO.createPermssionCode("exdecoration");
+  private final Code headsPerm = Plugin.DECO.createPermssionCode("exdecoration.heads");
+  private final Code reloadPerm = Plugin.DECO.createPermssionCode("exdecoration.heads.reload");
+  private final Code armorstandPerm = Plugin.DECO.createPermssionCode("exdecoration.armorstand");
+  private final Code itemframePerm = Plugin.DECO.createPermssionCode("exdecoration.itemframe");
+  private final Code headCreatePerm = Plugin.DECO.createPermssionCode("exdeco.heads.create");
 
   @Override
-  public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
-      Arguments<Argument> args) {
+  public void onCommand(Sender sender, PluginCommand cmd, Arguments<Argument> args) {
     if (!args.isLengthHigherEquals(1, true)) {
       return;
     }
@@ -86,26 +84,17 @@ public class DecoCmd implements CommandListener {
   }
 
   @Override
-  public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
-      Arguments<Argument> args) {
-    if (args.getLength() == 1) {
-      return List.of("heads", "stand", "armorstand", "frame", "itemframe");
-    } else if (args.length() == 2) {
-      return new ArrayList<>(DecoManager.getInstance().getHeadsManager().getSections());
-    } else if (args.length() == 3) {
-      return List.of("<name>");
-    } else if (args.length() == 4) {
-      return List.of("<url>");
-    }
-    return null;
+  public Completion getTabCompletion() {
+    return new Completion()
+        .addArgument(new Completion(this.headsPerm, "heads")
+            .addArgument(new Completion(this.headCreatePerm, "<name>")
+                .addArgument(new Completion("<url>"))))
+        .addArgument(new Completion(this.armorstandPerm, "stand", "armorstand"))
+        .addArgument(new Completion(this.itemframePerm, "frame", "itemframe"));
   }
 
   @Override
-  public void loadCodes(Plugin plugin) {
-    this.headsPerm = plugin.createPermssionCode("exdecoration.heads");
-    this.reloadPerm = plugin.createPermssionCode("exdecoration.heads.reload");
-    this.armorstandPerm = plugin.createPermssionCode("exdecoration.armorstand");
-    this.itemframePerm = plugin.createPermssionCode("exdecoration.itemframe");
-    this.headCreatePerm = plugin.createPermssionCode("exdeco.heads.create");
+  public String getPermission() {
+    return this.perm.getPermission();
   }
 }
