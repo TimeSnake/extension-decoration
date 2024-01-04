@@ -11,9 +11,9 @@ import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.extension.decoration.armorstand.StandEditor;
 import de.timesnake.extension.decoration.heads.HeadsManager;
+import de.timesnake.library.chat.Code;
 import de.timesnake.library.commands.PluginCommand;
 import de.timesnake.library.commands.simple.Arguments;
-import de.timesnake.library.extension.util.chat.Code;
 
 public class DecoCmd implements CommandListener {
 
