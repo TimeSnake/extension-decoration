@@ -6,17 +6,10 @@ package de.timesnake.extension.decoration.armorstand;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
-import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractListener;
+import de.timesnake.basic.bukkit.util.user.inventory.*;
 import de.timesnake.extension.decoration.deco.Plugin;
 import de.timesnake.extension.decoration.main.ExDecoration;
 import de.timesnake.library.chat.ExTextColor;
-import java.util.HashMap;
-import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -29,6 +22,10 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.util.EulerAngle;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class StandEditor implements Listener, UserInventoryInteractListener,
     UserInventoryClickListener,
@@ -287,7 +284,7 @@ public class StandEditor implements Listener, UserInventoryInteractListener,
 
   @Deprecated
   @Override
-  public Inventory getInventory() {
+  public @NotNull Inventory getInventory() {
     return this.toolInv.getInventory();
   }
 

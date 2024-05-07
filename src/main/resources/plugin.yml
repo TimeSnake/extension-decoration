@@ -1,5 +1,5 @@
 main: de.timesnake.extension.decoration.main.ExDecoration
-version: 1.2.0
+version: 1.2.1
 name: extension-decoration
 author: timesnake
 depend: [ basic-bukkit ]
