@@ -30,7 +30,7 @@ public class ItemFrameManager implements Listener {
 
     ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
 
-    if (item == null || !item.hasItemMeta() || !(event.getEntity() instanceof ItemFrame)) {
+    if (!item.hasItemMeta() || !(event.getEntity() instanceof ItemFrame)) {
       return;
     }
 
