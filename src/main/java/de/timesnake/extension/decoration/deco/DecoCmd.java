@@ -12,17 +12,18 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.extension.decoration.armorstand.StandEditor;
 import de.timesnake.extension.decoration.heads.HeadsManager;
 import de.timesnake.library.chat.Code;
+import de.timesnake.library.chat.Plugin;
 import de.timesnake.library.commands.PluginCommand;
 import de.timesnake.library.commands.simple.Arguments;
 
 public class DecoCmd implements CommandListener {
 
-  private final Code perm = Plugin.DECO.createPermssionCode("exdecoration");
-  private final Code headsPerm = Plugin.DECO.createPermssionCode("exdecoration.heads");
-  private final Code reloadPerm = Plugin.DECO.createPermssionCode("exdecoration.heads.reload");
-  private final Code armorstandPerm = Plugin.DECO.createPermssionCode("exdecoration.armorstand");
-  private final Code itemframePerm = Plugin.DECO.createPermssionCode("exdecoration.itemframe");
-  private final Code headCreatePerm = Plugin.DECO.createPermssionCode("exdeco.heads.create");
+  private final Code perm = Plugin.SERVER.createPermssionCode("exdecoration");
+  private final Code headsPerm = Plugin.SERVER.createPermssionCode("exdecoration.heads");
+  private final Code reloadPerm = Plugin.SERVER.createPermssionCode("exdecoration.heads.reload");
+  private final Code armorstandPerm = Plugin.SERVER.createPermssionCode("exdecoration.armorstand");
+  private final Code itemframePerm = Plugin.SERVER.createPermssionCode("exdecoration.itemframe");
+  private final Code headCreatePerm = Plugin.SERVER.createPermssionCode("exdeco.heads.create");
 
   @Override
   public void onCommand(Sender sender, PluginCommand cmd, Arguments<Argument> args) {
