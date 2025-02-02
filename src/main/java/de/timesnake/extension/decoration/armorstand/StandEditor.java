@@ -7,9 +7,9 @@ package de.timesnake.extension.decoration.armorstand;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.*;
-import de.timesnake.extension.decoration.deco.Plugin;
 import de.timesnake.extension.decoration.main.ExDecoration;
 import de.timesnake.library.chat.ExTextColor;
+import de.timesnake.library.chat.Plugin;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -152,28 +152,28 @@ public class StandEditor implements Listener, UserInventoryInteractListener,
     switch (this.editType) {
       case VISIBLE -> {
         this.armorStand.setVisible(!this.armorStand.isVisible());
-        user.sendPluginMessage(Plugin.DECO,
+        user.sendPluginMessage(Plugin.SERVER,
             Component.text("Visible: ", ExTextColor.PERSONAL)
                 .append(Component.text(this.armorStand.isVisible(),
                     ExTextColor.VALUE)));
       }
       case BASE_PLATE -> {
         this.armorStand.setBasePlate(!this.armorStand.hasBasePlate());
-        user.sendPluginMessage(Plugin.DECO,
+        user.sendPluginMessage(Plugin.SERVER,
             Component.text("Base Plate: ", ExTextColor.PERSONAL)
                 .append(Component.text(this.armorStand.hasBasePlate(),
                     ExTextColor.VALUE)));
       }
       case ARMS -> {
         this.armorStand.setArms(!this.armorStand.hasArms());
-        user.sendPluginMessage(Plugin.DECO,
+        user.sendPluginMessage(Plugin.SERVER,
             Component.text("Arms: ", ExTextColor.PERSONAL)
                 .append(Component.text(this.armorStand.hasArms(),
                     ExTextColor.VALUE)));
       }
       case SMALL -> {
         this.armorStand.setSmall(!this.armorStand.isSmall());
-        user.sendPluginMessage(Plugin.DECO,
+        user.sendPluginMessage(Plugin.SERVER,
             Component.text("Small: ", ExTextColor.PERSONAL)
                 .append(Component.text(this.armorStand.isSmall(),
                     ExTextColor.VALUE)));
@@ -188,7 +188,7 @@ public class StandEditor implements Listener, UserInventoryInteractListener,
               EquipmentSlot.CHEST,
               EquipmentSlot.HEAD, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND);
         }
-        user.sendPluginMessage(Plugin.DECO, Component.text("Locked: ", ExTextColor.PERSONAL)
+        user.sendPluginMessage(Plugin.SERVER, Component.text("Locked: ", ExTextColor.PERSONAL)
             .append(Component.text(this.armorStand.isSlotDisabled(EquipmentSlot.FEET),
                 ExTextColor.VALUE)));
       }
@@ -200,7 +200,7 @@ public class StandEditor implements Listener, UserInventoryInteractListener,
         this.armorStand.setItem(EquipmentSlot.HEAD,
             this.itemInv.getInventory().getItem(10));
       }
-      case COPY -> user.sendPluginMessage(Plugin.DECO,
+      case COPY -> user.sendPluginMessage(Plugin.SERVER,
           Component.text("Copied", ExTextColor.PERSONAL));
       case RESET_ROTATION -> {
         this.armorStand.setRightArmPose(new EulerAngle(0, 0, 0));
@@ -209,16 +209,16 @@ public class StandEditor implements Listener, UserInventoryInteractListener,
         this.armorStand.setLeftLegPose(new EulerAngle(0, 0, 0));
         this.armorStand.setHeadPose(new EulerAngle(0, 0, 0));
         this.armorStand.setBodyPose(new EulerAngle(0, 0, 0));
-        user.sendPluginMessage(Plugin.DECO, Component.text("Reset", ExTextColor.PERSONAL));
+        user.sendPluginMessage(Plugin.SERVER, Component.text("Reset", ExTextColor.PERSONAL));
       }
       case GRAVITY -> {
         this.armorStand.setGravity(!this.armorStand.hasGravity());
-        user.sendPluginMessage(Plugin.DECO,
+        user.sendPluginMessage(Plugin.SERVER,
             Component.text("Gravity: ", ExTextColor.PERSONAL)
                 .append(Component.text(this.armorStand.hasGravity(),
                     ExTextColor.VALUE)));
       }
-      default -> user.sendPluginMessage(Plugin.DECO,
+      default -> user.sendPluginMessage(Plugin.SERVER,
           Component.text("No tool selected", ExTextColor.WARNING));
     }
   }
@@ -245,7 +245,7 @@ public class StandEditor implements Listener, UserInventoryInteractListener,
       if (editType != null) {
         this.editType = editType;
 
-        user.sendPluginMessage(Plugin.DECO, Component.text("Tool: ", ExTextColor.PERSONAL)
+        user.sendPluginMessage(Plugin.SERVER, Component.text("Tool: ", ExTextColor.PERSONAL)
             .append(Component.text(this.editType.name().toLowerCase(),
                 ExTextColor.VALUE)));
 

@@ -6,7 +6,7 @@ package de.timesnake.extension.decoration.main;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.extension.decoration.deco.DecoCmd;
-import de.timesnake.extension.decoration.deco.Plugin;
+import de.timesnake.library.chat.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class ExDecoration extends JavaPlugin {
     plugin = this;
 
     Server.getCommandManager().addCommand(this, "decoration",
-        List.of("deco", "decos", "decorations"), new DecoCmd(), Plugin.DECO);
+        List.of("deco", "decos", "decorations"), new DecoCmd(), Plugin.SERVER);
 
   }
 }
