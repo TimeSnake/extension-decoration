@@ -88,8 +88,8 @@ public class DecoCmd implements CommandListener {
   public Completion getTabCompletion() {
     return new Completion()
         .addArgument(new Completion(this.headsPerm, "heads")
-            .addArgument(new Completion(this.headCreatePerm, "<name>")
-                .addArgument(new Completion("<url>"))))
+            .addArgument(new Completion(this.headCreatePerm, "<name>").allowAny()
+                .addArgument(new Completion("<url>").allowAny())))
         .addArgument(new Completion(this.armorstandPerm, "stand", "armorstand"))
         .addArgument(new Completion(this.itemframePerm, "frame", "itemframe"));
   }
