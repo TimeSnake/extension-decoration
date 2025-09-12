@@ -9,11 +9,13 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.database.util.decoration.DbHead;
-import java.lang.reflect.Field;
-import java.util.UUID;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Material;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+
+import java.lang.reflect.Field;
+import java.util.UUID;
 
 public class Head {
 
@@ -81,9 +83,9 @@ public class Head {
 
     this.item = new ExItemStack(Material.PLAYER_HEAD);
 
-    ItemMeta headMeta = this.item.getItemMeta();
+    SkullMeta headMeta = ((SkullMeta) this.item.getItemMeta());
     Class<?> headMetaClass = headMeta.getClass();
-    Head.getField(headMetaClass, "profile", GameProfile.class, 0).set(headMeta, profile);
+    Head.getField(headMetaClass, "profile", ResolvableProfile.class, 0).set(headMeta, new ResolvableProfile(profile));
     profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
     this.item.setItemMeta(headMeta);
 
